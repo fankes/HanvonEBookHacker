@@ -1,0 +1,50 @@
+##
+# Hanvon EBook Hacker
+# Copyright (C) 2017-2023 Fankes Studio(qzmmcn@163.com)
+# https://github.com/fankes/HanvonEBookHacker
+#
+# This software is non-free but opensource software: you can redistribute it
+# and/or modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation; either
+# version 3 of the License, or any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# and eula along with this software.  If not, see
+# <https://www.gnu.org/licenses/>
+#
+# This file is created by fankes on 2023/9/9.
+##
+
+# 外置 TF 卡
+tfCard = "\Storage Card"
+
+# 外置 TF 卡的启动项
+launcherProgram = tfCard & "\Programs\Launcher\Launcher.exe"
+
+# 记录 TF 卡状态
+tfCardStatus = "未知"
+
+If(DirExists(tfCard))
+  tfCardStatus = "已插入"
+Else
+  tfCardStatus = "未插入"
+EndIf
+
+# 延迟确保系统已经启动
+Sleep(2500)
+
+# 一直等待直到存在启动项
+While(NOT FileExists(launcherProgram))
+  SleepMessage(10, "未发现启动项：" & launcherProgram & "^NL^^NL^\
+  TF 卡状态：" & tfCardStatus & "^NL^^NL^\
+  请插入 TF 卡并将需要启动的应用程序放置于此位置。^NL^^NL^\
+  将在以下秒数后自动重试。^NL^", "Hanvon EBook Launcher Hacker")
+EndWhile
+
+# 运行启动项
+Run(launcherProgram)

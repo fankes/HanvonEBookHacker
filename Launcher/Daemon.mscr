@@ -1,0 +1,83 @@
+##
+# Hanvon EBook Hacker
+# Copyright (C) 2017-2023 Fankes Studio(qzmmcn@163.com)
+# https://github.com/fankes/HanvonEBookHacker
+#
+# This software is non-free but opensource software: you can redistribute it
+# and/or modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation; either
+# version 3 of the License, or any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# and eula along with this software.  If not, see
+# <https://www.gnu.org/licenses/>
+#
+# This file is created by fankes on 2023/9/10.
+##
+
+# 这将表示为 explorer.exe 的进程名
+explorerProgramProcess = "explorer.exe"
+
+# Hanvon 主程序 (已重命名)
+mainProgram = "\NAND\ebook\ebook.original.exe"
+# 这将表示为它的进程名
+mainProgramProcess = "ebook.original.exe"
+
+# 开机画面 LOGO 文件
+startLogo = "\NAND\start.jpg"
+
+# 启动无限循环监听
+# 可在循环内加入自己的事件
+While(True)
+
+  # 获取当前程序窗口标题
+  currentWindow = ActiveWindow()
+
+  # 进入 Windows CE 的标识标题
+  toWinceTitle = "进入 WinCE 桌面"
+
+  # 判断主程序在运行
+  If(ProcExists(mainProgramProcess))
+    # 判断收到指定窗口标题
+    # 说明：这里进行了一次重新启动进程
+    #       这是为了防止在二级界面中屏幕刷新功能出错
+    If(currentWindow eq toWinceTitle)
+      # 强制结束进程
+      Kill(mainProgramProcess)
+      # 此脚本不会帮你自动启动 explorer.exe
+      # 请确保其已在 "Launcher.mscr" 中启动
+      If(ProcExists(explorerProgramProcess))
+        # 延迟以继续
+        SleepMessage(1, "正在准备 Windows CE 桌面...", "请稍候")
+        # 重新启动
+        Run(mainProgram)
+        # 根据有无开机画面设置延迟
+        delay = 3
+        If(FileExists(startLogo))
+          delay = 7
+        EndIf
+        # 延迟以继续
+        SleepMessage(delay, "正在进入 Windows CE 桌面...", "请稍候")
+        # 再次结束进程
+        Kill(mainProgramProcess)
+      Else
+        SleepMessage(15, "无法进入 Windows CE 桌面。^NL^^NL^\
+        当前系统的 explorer.exe 并未在运行，\
+        请修改启动脚本使其在启动项中启动，然后重启机器。^NL^^NL^\
+        15 秒内无任何操作后将重启主程序。^NL^", "启动失败")
+        Run(mainProgram)
+      EndIf
+      # 延迟防止重复执行
+      Sleep(1500)
+    EndIf
+  EndIf
+
+  # 设置下一个监听周期
+  Sleep(500)
+
+EndWhile

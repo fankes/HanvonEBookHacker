@@ -1,0 +1,91 @@
+##
+# Hanvon EBook Hacker
+# Copyright (C) 2017-2023 Fankes Studio(qzmmcn@163.com)
+# https://github.com/fankes/HanvonEBookHacker
+#
+# This software is non-free but opensource software: you can redistribute it
+# and/or modify it under the terms of the GNU Affero General Public License
+# as published by the Free Software Foundation; either
+# version 3 of the License, or any later version.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# and eula along with this software.  If not, see
+# <https://www.gnu.org/licenses/>
+#
+# This file is created by fankes on 2023/9/9.
+##
+
+# 设备常用的几个 Flash 存储区 (不同型号可能不一样)
+# - Hive 注册表: \HIVE
+# - Hanvon 主程序: \NAND
+# - 用户内置存储: \USER
+# - 外置 TF 卡: \Storage Card
+
+# 守护进程
+# 你可以直接修改 "Daemon.mscr" 中的内容
+daemonProgram = "\Storage Card\Programs\Launcher\Daemon.exe"
+
+# 核心程序 nk.exe
+nkProgram = "\Windows\nk.exe"
+
+# Windows 资源管理器
+# 首次启动会进入 Windows CE 桌面
+explorerProgram = "\Windows\explorer.exe"
+
+# Windows 控制面板
+controlProgram = "\Windows\control.exe"
+
+# Hanvon 主程序 (已重命名)
+mainProgram = "\NAND\ebook\ebook.original.exe"
+# 这将表示为它的进程名
+mainProgramProcess = "ebook.original.exe"
+
+# Hanvon 自带浏览器 (部分机型未在其设备中加入此功能但保留了程序文件)
+webBrowserProgram = "\NAND\ebook\webbrowser\WebBrowser.exe"
+
+# Windows 默认的桌面目录
+desktopFolderEng = "\Windows\Desktop"
+desktopFolderChs = "\Windows\桌面"
+
+# 为主程序、浏览器创建快捷方式
+
+# 你可以双击桌面的 "EBook" 重新回到主程序
+mainShortcutName = "EBook.lnk"
+
+# 你可以双击桌面的 "浏览器" 打开内置的浏览器
+webBrowserShortcutName = "浏览器.lnk"
+
+If(DirExists(desktopFolderEng))
+  CreateShortCut(desktopFolderEng & "\" & mainShortcutName, mainProgram)
+  If(FileExists(webBrowserProgram))
+    CreateShortCut(desktopFolderEng & "\" & webBrowserShortcutName, webBrowserProgram)
+  EndIf
+EndIf
+If(DirExists(desktopFolderChs))
+  CreateShortCut(desktopFolderChs & "\" & mainShortcutName, mainProgram)
+  If(FileExists(webBrowserProgram))
+    CreateShortCut(desktopFolderChs & "\" & webBrowserShortcutName, webBrowserProgram)
+  EndIf
+EndIf
+
+# 启动守护进程
+Run(daemonProgram)
+
+# 启动项 1
+Run(explorerProgram)
+
+# 延迟等待下一个操作
+Sleep(1500)
+
+# 启动项 2
+Run(mainProgram)
+
+# (可选) 如果你想保持进入 Windows CE 桌面
+#        可以在其启动后直接结束它
+# Sleep(2500)
+# Kill(mainProgramProcess)
